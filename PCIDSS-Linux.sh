@@ -1,6 +1,6 @@
 #!/bin/sh
 #This Script is written to retrieve information for the purposes of PCI DSS Standard's Compliance
-#Author: Matthew Hanson
+#Author: Matthew Hanson and Dimpal
 echo "Please wait, this may take some time"
 echo "Getting System info"
 echo "|=--------------------------=[SYSTEM INFORMATION]=---------------------------=|" >> $HOSTNAME-SystemInfo.txt
