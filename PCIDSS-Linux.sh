@@ -1,6 +1,7 @@
 #!/bin/sh
 #This Script is written to retrieve information for the purposes of PCI DSS Standard's Compliance
-#Author: Matthew Hanson and Dimpal# Purpose: Determine if current user is root or not
+#Author: Matthew Hanson and Dimpal
+# Purpose: Determine if current user is root or not
 is_root_user() {
  [ $(id -u) -eq 0 ]
 }
@@ -98,7 +99,7 @@ sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rp
 echo "|=------------------------=[SERVICES RUNNING]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo systemctl --state=running || netstat -tulpn >> $HOSTNAME-Requirement-2.txt
+sudo systemctl --state=running || netstat -tupln >> $HOSTNAME-Requirement-2.txt
 
 
 echo "|=------------------------=[PROCESSES RUNNING]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
