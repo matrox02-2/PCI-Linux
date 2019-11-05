@@ -196,6 +196,43 @@ echo "|= Related requirements: 2.2.5                                            
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 find /lib/modules/$(uname -r)/kernel/ -name '*.ko*' >> $HOSTNAME-Requirement-2.txt
 
+echo "|=----------------------------=[USB DRIVE]=----------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+sudo lsmod | grep usb_storage  >> $HOSTNAME-Requirement-2.txt
+sudo ls /lib/modules/`uname -r`/kernel/drivers/usb/storage  >>   $HOSTNAME-Requirement-2.txt
+
+echo "|=--------------------------=[SHARED FOLDERS]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+#echo "|= Related requirements: 2.2.5                                           	=|" >>   #$HOSTNAME-Requirement-2.txt
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+
+smbvar=`sudo smbstatus --shares`
+if [ ! ”$smbvar” ]
+then
+	echo “SMB Service Not installed/ No shares found”
+else
+	echo “ SMB Shares are as Follows : $smbvar”
+fi
+
+echo "|=----------------------=[ENCRYPTION METHOD FOR PASSWORD]=--------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo “Getting encryption method used for password for all non console(remote) ssh access ” >> $HOSTNAME-Requirement-2.txt
+sudo cat /etc/login.defs | grep ENCRYPT_METHOD >>$HOSTNAME-Requirement-2.txt
+
+echo "|=----------------------=[TELNET SERVICE STATUS]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo “Making sure all insecure non console access(telnet) is diabled or stopped” >> $HOSTNAME-Requirement-2.txt
+systemctl is-enabled telnet.socket >>$HOSTNAME-Requirement-2.txt
+netstat -lataupen | grep telnet >>$HOSTNAME-Requirement-2.txt
+ps -ef | grep telnet >> $HOSTNAME-Requirement-2.txt
+
+
+echo "|=----------------------=[RSH SERVICE STATUS]=--------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo “Making sure all insecure non console access(rsh) is diabled or stopped ” >> $HOSTNAME-Requirement-2.txt
+systemctl is-enabled rsh.socket >>$HOSTNAME-Requirement-2.txt
+systemctl is-enabled rlogin.socket >>$HOSTNAME-Requirement-2.txt
+systemctl is-enabled rexec.socket >>$HOSTNAME-Requirement-2.txt
+netstat -na | grep 514 >>$HOSTNAME-Requirement-2.txt
+ps -ef | grep rsh >>$HOSTNAME-Requirement-2.txt
+
+
 echo "Getting Requirement 4" 
 echo "|=----------------------=[TLS VERSIONS]=-----------------------=|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|= Related requirements: 4.1                                                 =|" >>   $HOSTNAME-Requirement-4.txt 
