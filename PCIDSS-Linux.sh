@@ -236,9 +236,9 @@ ps -ef | grep rsh >>$HOSTNAME-Requirement-2.txt
 
 
 echo "Getting Requirement 4" 
-echo "|=----------------------=[TLS VERSIONS]=-----------------------=|" >>   $HOSTNAME-Requirement-4.txt 
+echo "|=----------------------=[TLS VERSIONS]=-------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|= Related requirements: 4.1                                                 =|" >>   $HOSTNAME-Requirement-4.txt 
-echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
 echo "Check for TLS1.2 handshake" >>   $HOSTNAME-Requirement-4.txt 
 sudo openssl s_client -connect google.com:443 -tls1_2  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
 
@@ -247,7 +247,12 @@ sudo openssl s_client -connect google.com:443 -tls1_1  2>/dev/null >>   $HOSTNAM
 
 echo "Check for TLS1.0 handshake" >>   $HOSTNAME-Requirement-4.txt 
 sudo openssl s_client -connect google.com:443 -tls1  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
-[ ! -z `dpkg -l | grep clamav` ] || [ ! -z `rpm -qa | grep clamav` ] || [ ! -z `pacman -Q clamav` ] && echo "ClamAV Installed" || echo "ClamAV not installed"
+
+echo "|=----------------------=[TLS VERSIONS]=-------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
+echo "|= Related requirements: 4.2                                                 =|" >>   $HOSTNAME-Requirement-4.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
+echo "Check which service use ssl/tls dor transmitting data" >>   $HOSTNAME-Requirement-4.txt
+for I in $(find /usr/sbin -type f -print); do ldd ${I} | egrep -q "(ssl|tls)"; if [ $? -eq 0 ]; then echo ${I} >> $HOSTNAME-Requirement-4.txt; fi; done
 
 
 echo "Getting Requirement 6"
