@@ -247,6 +247,7 @@ sudo openssl s_client -connect google.com:443 -tls1_1  2>/dev/null >>   $HOSTNAM
 
 echo "Check for TLS1.0 handshake" >>   $HOSTNAME-Requirement-4.txt 
 sudo openssl s_client -connect google.com:443 -tls1  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
+[ ! -z `dpkg -l | grep clamav` ] || [ ! -z `rpm -qa | grep clamav` ] || [ ! -z `pacman -Q clamav` ] && echo "ClamAV Installed" || echo "ClamAV not installed"
 
 
 echo "Getting Requirement 6"
