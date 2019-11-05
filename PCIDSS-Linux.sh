@@ -254,6 +254,12 @@ echo "|=------------------------------------------------------------------------
 echo "Check which service use ssl/tls dor transmitting data" >>   $HOSTNAME-Requirement-4.txt
 for I in $(find /usr/sbin -type f -print); do ldd ${I} | egrep -q "(ssl|tls)"; if [ $? -eq 0 ]; then echo ${I} >> $HOSTNAME-Requirement-4.txt; fi; done
 
+echo "|=----------------------=[ANTIVIRUS INSTALLED]=------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
+echo "|= Related requirements: 5.1                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
+echo "Check ClamAV is installed or not" >>   $HOSTNAME-Requirement-5.txt
+[ ! -z `dpkg -l | grep clamav` 2>/dev/null ] || [ ! -z `rpm -qa | grep clamav` 2>/dev/null ] || [ ! -z `pacman -Q clamav` 2>/dev/null ] && echo "ClamAV is installed" || echo "ClamAV is not installed"
+echo ""
 
 echo "Getting Requirement 6"
 echo "|=------------------------------=[OS VERSION]=--------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
