@@ -61,13 +61,13 @@ else
 fi
 
 echo "Getting Requirement 1"
-echo "|=----------------=[PERSONAL FIREWALL - SERVICE STATUS]=---------------------=|" >>   $HOSTNAME-Requirement-1.txt 
+echo "|=----------------=[FIREWALL - SERVICE STATUS]=---------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.4                                                 =|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 sudo service firewalld status >> $HOSTNAME-Requirement-1.txt
 
 
-echo "|=------------------=[PERSONAL FIREWALL CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-1.txt 
+echo "|=------------------=[FIREWALL CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.4                                                 =|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "########## INPUT rules ###########" >> $HOSTNAME-Requirement-1.txt
@@ -98,7 +98,8 @@ sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rp
 echo "|=------------------------=[SERVICES RUNNING]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo systemctl --state=running >> $HOSTNAME-Requirement-2.txt
+sudo systemctl --state=running || netstat -tulpn >> $HOSTNAME-Requirement-2.txt
+
 
 echo "|=------------------------=[PROCESSES RUNNING]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
