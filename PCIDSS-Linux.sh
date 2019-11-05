@@ -1,6 +1,14 @@
 #!/bin/sh
 #This Script is written to retrieve information for the purposes of PCI DSS Standard's Compliance
-#Author: Matthew Hanson and Dimpal
+#Author: Matthew Hanson and Dimpal# Purpose: Determine if current user is root or not
+is_root_user() {
+ [ $(id -u) -eq 0 ]
+}
+
+# invoke the function
+# make decision using conditional logical operators
+is_root_user && echo "You can run this script." || echo "You need to run this script as a root user."
+
 echo "Please wait, this may take some time"
 echo "Getting System info"
 echo "|=--------------------------=[SYSTEM INFORMATION]=---------------------------=|" >> $HOSTNAME-SystemInfo.txt
@@ -56,18 +64,29 @@ echo "Getting Requirement 1"
 echo "|=----------------=[PERSONAL FIREWALL - SERVICE STATUS]=---------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.4                                                 =|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
-sudo service firewalld status >>   $HOSTNAME-Requirement-1.txt 2> /dev/null
+sudo service firewalld status >> $HOSTNAME-Requirement-1.txt
+
 
 echo "|=------------------=[PERSONAL FIREWALL CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.4                                                 =|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
-sudo iptables -L >>   $HOSTNAME-Requirement-1.txt
+echo "########## INPUT rules ###########" >> $HOSTNAME-Requirement-1.txt
+sudo iptables -L INPUT >> $HOSTNAME-Requirement-1.txt
+echo "########## OUTPUT rules ###########" >> $HOSTNAME-Requirement-1.txt
+sudo iptables -L OUTPUT >> $HOSTNAME-Requirement-1.txt
+echo "########## FORWARD rules ###########" >> $HOSTNAME-Requirement-1.txt
+sudo iptables -L FORWARD >>   $HOSTNAME-Requirement-1.txt
 
 
 echo "|=-----------------------=[USER ACCOUNTS]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related Requirements: 2.1                                                =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 cat /etc/passwd >>   $HOSTNAME-Requirement-2.txt
+
+echo "|=-----------------------=[USER ACCOUNTS]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related Requirements: 2.1                                                =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+cat /etc/group >>  $HOSTNAME-Requirement-2.txt
 
 echo "Getting Requirement 2"
 echo "|=-------------------------=[INSTALLED SOFTWARE]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
@@ -79,17 +98,32 @@ sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rp
 echo "|=------------------------=[SERVICES RUNNING]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo systemctl --state=running >>   $HOSTNAME-Requirement-2.txt
+sudo systemctl --state=running >> $HOSTNAME-Requirement-2.txt
 
 echo "|=------------------------=[PROCESSES RUNNING]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 sudo ps -ef >>   $HOSTNAME-Requirement-2.txt
 
-echo "|=-----------------------=[NETWORK CONNECTIONS]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[PORTS IN LISTENING STATE]=------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo netstat -a >> $HOSTNAME-Requirement-2.txt
+sudo lsof -i -P -n | grep LISTEN >> $HOSTNAME-Requirement-2.txt
+
+echo "|=-----------------------=[NETWORK CONNECTION]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+sudo netstate -a >> $HOSTNAME-Requirement-2.txt
+
+echo "|=-----------------------=[NETWORK INTERFACES]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+sudo ip link show >> $HOSTNAME-Requirement-2.txt
+
+echo "|=-----------------------=[KERNAL ROUTE TABLE]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+sudo netstate -r >> $HOSTNAME-Requirement-2.txt
 
 echo "|=---------------------------=[IPv6 SUPPORT]=--------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
@@ -138,43 +172,29 @@ echo "checks /etc/login.defs for expiry warning configuration" >>   $HOSTNAME-Re
 sudo grep PASS_WARN_AGE /etc/login.defs >>    $HOSTNAME-Requirement-2.txt 
 
 echo "--[ Interactive logon: Message text for users attempting to log on ]" >>   $HOSTNAME-Requirement-2.txt 
-echo "checks /etc/issue" >>   $HOSTNAME-Requirement-2.txt
-sudo cat /etc/issue >>   $HOSTNAME-Requirement-2.txt
+echo "checks /etc/motd" >>   $HOSTNAME-Requirement-2.txt
+sudo cat /etc/motd >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
-echo "checks /etc/issue.net" >>   $HOSTNAME-Requirement-2.txt
-sudo cat /etc/issue.net >>   $HOSTNAME-Requirement-2.txt
+echo "checks /etc/sshd for banner" >>   $HOSTNAME-Requirement-2.txt
+sudo cat /etc/ssh/sshd_config  | grep Banner >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
-
 
 #echo "--[ System cryptography: Force strong key protection for user keys stored on the computer ]" >>   $HOSTNAME-Requirement-2.txt 
-
-
-
-
 
 echo "|=----------------------------=[LOCAL DRIVES]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 sudo lshw -class disk  >>   $HOSTNAME-Requirement-2.txt 
 
-echo "|=--------------------------=[SHARED FOLDERS]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
-echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo smbstatus --shares  >>   $HOSTNAME-Requirement-2.txt 2> /dev/null
-
-
-
 echo "|=--------------------------=[PACKAGES INSTALLED]=---------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rpm -qa >> $HOSTNAME-Requirement-2.txt 2> /dev/null|| sudo dpkg-query >> $HOSTNAME-Requirement-2.txt 2> /dev/null||sudo yum list installed >> $HOSTNAME-Requirement-2.txt2> /dev/null || sudo pacman -Q >> $HOSTNAME-Requirement-2.txt 2> /dev/null
 
-
 echo "|=--------------------------=[DRIVERS INSTALLED]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 find /lib/modules/$(uname -r)/kernel/ -name '*.ko*' >> $HOSTNAME-Requirement-2.txt
-
 
 echo "Getting Requirement 4" 
 echo "|=----------------------=[TLS VERSIONS]=-----------------------=|" >>   $HOSTNAME-Requirement-4.txt 
