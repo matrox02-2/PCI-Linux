@@ -1103,6 +1103,7 @@ echo "|=------------------------------------------------------------------------
 echo "Audit service status" >> $HOSTNAME-Requirement-10.txt
 sudo auditctl -s 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "" >> $HOSTNAME-Requirement-10.txt
+
 echo "Audit Configuration" >> $HOSTNAME-Requirement-10.txt
 sudo cat /etc/audit/auditd.conf >> $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
@@ -1111,11 +1112,23 @@ echo "|= Related requirements: 10.4                                             
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 sudo systemctl status ntpd >> $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
+
 echo "|=---------------------------=[NTP CONFIGURATION]=----------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.4.3                                               =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 sudo cat /etc/ntp.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
+echo "|=---------------------------=[NTP PEERS]=------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|= Related requirements: 10.4.3                                               =|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+sudo ntpd -p 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "">>   $HOSTNAME-Requirement-10.txt
+
+echo "|=---------------------------=[NTP SYNC STATUS]=------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|= Related requirements: 10.4.3                                               =|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+sudo ntpstat 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "">>   $HOSTNAME-Requirement-10.txt
 
 echo "Finished, files have been generated for review in $(pwd) "
