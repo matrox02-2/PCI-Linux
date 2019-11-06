@@ -385,10 +385,34 @@ echo "|=-----------------------=[INACTIVE ACCOUNTS]=----------------------------
 echo "|= Related requirements: 8.1.                                                 =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "Getting inactive accounts more than or equal to 90 days" >> $HOSTNAME-Requirement-8.txt
-`lastlog -b 90 | tail -n+2 | grep -v '**Never log**' | awk '{print $1}'` >>  $HOSTNAME-Requirement-8.txt
+inactive=`lastlog -b 90 | tail -n+2 | grep -v '**Never log**' | awk '{print $1}'` >> /dev/null
+echo $inactive >> $HOSTNAME-Requirement-8.txt
+
+echo "|=-----------------------=[LOCKED/DISABLE INACTIVE ACCOUNTS]=-----------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.2.4                                                =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "Checking user password locked for inactive user over 90 days" >> $HOSTNAME-Requirement-8.txt
+inact=`lastlog -b 5 | tail -n+2 | grep -v '**Never log**' | awk '{print $1}'` >> /dev/null
+for line in $inact
+do
+lk=`passwd -S $line | awk '{print $2}'` >> /dev/null
+if [ "$lk" = "LK" ]; then
+( echo "$line is locked" >> $HOSTNAME-Requirement-8.txt )
+else
+( echo "$line is not locked" >> $HOSTNAME-Requirement-8.txt )
+fi
+done
+
 
 echo "|=-----------------------=[FILE INTEGRETY CHECK]=-----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1.                                                 =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
+echo "integrety check for both password files" >> $HOSTNAME-Requirement-8.txt
+pwck -r >> $HOSTNAME-Requirement-8.txt
+
+
+echo "|=-----------------------=[FILE PERMISSION CHECK]=----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "Checking Permission of passwd file" >> $HOSTNAME-Requirement-8.txt
 ls -alth | grep /etc/passwd >> $HOSTNAME-Requirement-8.txt
@@ -464,14 +488,14 @@ then
 fi
 if [ ! -z "$logout1" ]
 then
-	echo ".bashrc :: Time out settings in seconds:"$logout1 >>   $HOSTNAME-Requirement-8.txt
- 
+	echo ".bashrc :: Time out settings in seconds:"$logout1" >>   $HOSTNAME-Requirement-8.txt
+        [ $logout1 = 900 ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
 if [ ! -z "$logout2" ]
 then
-	echo ".bash_profile :: Time out settings in seconds:"$logout1 >>   $HOSTNAME-Requirement-8.txt
+	echo ".bash_profile :: Time out settings in seconds:"$logout2 >>   $HOSTNAME-Requirement-8.txt
+        [ $logout2 = 900 ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
-
 
 echo "--[ SSH Timeout ]" >>   $HOSTNAME-Requirement-8.txt
 echo "This setting logs a SSH user out after a period of time" >>   $HOSTNAME-Requirement-8.txt
@@ -481,7 +505,6 @@ sudo cat sshd_config 2>/dev/null| grep ClientAliveInterval >>   $HOSTNAME-Requir
 echo "Client alive count" >>   $HOSTNAME-Requirement-8.txt
 sudo cat sshd_config 2>/dev/null| grep  ClientAliveCountMax >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
-
 
 echo "|=---------------------=[PASSWORD STORE CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.2.1                                               =|" >>   $HOSTNAME-Requirement-8.txt 
@@ -760,9 +783,45 @@ echo "" >>   $HOSTNAME-Requirement-8.txt
 echo "|=--------------------------=[PASSWORD HISTORY]=------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.2.5                                                =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-grep pam_unix.so /etc/pam.d/common-password 2>/dev/null|grep remember=* >>   $HOSTNAME-Requirement-8.txt
+egrep 'pam_unix.so|pam_pwhistory' /etc/pam.d/common-password 2>/dev/null|grep remember=* >>   $HOSTNAME-Requirement-8.txt
 
-grep pam_unix.so /etc/pam.d/system-auth 2>/dev/null|grep remember=* >>   $HOSTNAME-Requirement-8.txt
+egrep 'pam_unix.so|pam_pwhistory' /etc/pam.d/system-auth 2>/dev/null|grep remember=* >>   $HOSTNAME-Requirement-8.txt
+
+echo "" >>   $HOSTNAME-Requirement-8.txt
+echo "|=--------------------------=[TWO FACTOR AUTHENTICATION]=---------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.3                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "Checking 2 factor auth configuration" >> $HOSTNAME_Requirement-8.txt
+cp=/etc/pam.d/common-password
+pa=/etc/pam.d/password-auth
+ca=/etc/pam.d/common-auth
+sa=/etc/pam.d/system-auth
+if [ -a $cp ]
+then 
+( 
+egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $cp 
+[ ! $@ ] && echo "no authenticator config exist in common-password file" >> $HOSTNAME_Requirement-8.txt || echo $@ >> $HOSTNAME_Requirement-8.txt
+)
+elif [ -a $pa ]
+then
+( 
+egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $pa 
+[ ! $@ ] && echo "no authenticator config exist in password-auth" >> $HOSTNAME_Requirement-8.txt || echo $@ >> $HOSTNAME_Requirement-8.txt )
+else
+(
+echo "both file not exist" >> $HOSTNAME_Requirement-8.txt
+)
+fi
+
+echo "" >>   $HOSTNAME-Requirement-8.txt
+echo "|=-----------------------------=[LOGIN SHELLS]=-------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.5                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.t
+echo "checking which shells are valid/allowd" >> $HOSTNAME-Requirement-8.txt
+cat /etc/shells >> $HOSTNAME-Requirement-8.txt
+echo "" >> $HOSTNAME-Requirement-8.txt
+
+
 
 echo "" >>   $HOSTNAME-Requirement-8.txt
 echo "|=-----------------------------=[LOCAL ACCOUNTS]=-----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
