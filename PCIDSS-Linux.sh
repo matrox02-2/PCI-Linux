@@ -10,6 +10,9 @@ is_root_user() {
 # make decision using conditional logical operators
 is_root_user && echo "You can run this script." || echo "You need to run this script as a root user."
 
+echo "Test Starts"
+start=$(date +%s.%N)
+
 echo "Please wait, this may take some time"
 echo "Getting System info"
 echo "|=--------------------------=[SYSTEM INFORMATION]=---------------------------=|" >> $HOSTNAME-SystemInfo.txt
@@ -17,9 +20,6 @@ sudo hostnamectl >> $HOSTNAME-SystemInfo.txt
 echo "--------------------" >> $HOSTNAME-SystemInfo.txt
 echo "Kernel Name" >> $HOSTNAME-SystemInfo.txt
 sudo uname -s >> $HOSTNAME-SystemInfo.txt
-echo "--------------------" >> $HOSTNAME-SystemInfo.txt
-echo "Kernel Version" >> $HOSTNAME-SystemInfo.txt
-sudo uname -v >> $HOSTNAME-SystemInfo.txt
 echo "--------------------" >> $HOSTNAME-SystemInfo.txt
 echo "Kernel Release" >> $HOSTNAME-SystemInfo.txt
 sudo uname -r >> $HOSTNAME-SystemInfo.txt
@@ -62,10 +62,10 @@ else
 fi
 
 echo "Getting Requirement 1"
-echo "|=----------------=[FIREWALL - SERVICE STATUS]=---------------------=|" >>   $HOSTNAME-Requirement-1.txt 
+echo "|=----------------=[FIREWALL - SERVICE STATUS]=------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.4                                                 =|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt 
-sudo service firewalld status >> $HOSTNAME-Requirement-1.txt
+sudo service firewalld status 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 
 
 echo "|=------------------=[FIREWALL CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-1.txt 
@@ -79,13 +79,13 @@ echo "########## FORWARD rules ###########" >> $HOSTNAME-Requirement-1.txt
 sudo iptables -L FORWARD >>   $HOSTNAME-Requirement-1.txt
 
 
-echo "|=-----------------------=[USER ACCOUNTS]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-echo "|= Related Requirements: 2.1                                                =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[USER ACCOUNTS]=-----------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related Requirements: 2.1                                                 =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 cat /etc/passwd >>   $HOSTNAME-Requirement-2.txt
 
-echo "|=-----------------------=[USER ACCOUNTS]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-echo "|= Related Requirements: 2.1                                                =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[GROUP ACCOUNTS]=---------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related Requirements: 2.1                                                 =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 cat /etc/group >>  $HOSTNAME-Requirement-2.txt
 
@@ -99,33 +99,33 @@ sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rp
 echo "|=------------------------=[SERVICES RUNNING]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo systemctl --state=running || netstat -tupln >> $HOSTNAME-Requirement-2.txt
+sudo systemctl --state=running 2> /dev/null >> $HOSTNAME-Requirement-2.txt || netstat -tupln 2> /dev/null >> $HOSTNAME-Requirement-2.txt
 
 
 echo "|=------------------------=[PROCESSES RUNNING]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
-echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo ps -ef >>   $HOSTNAME-Requirement-2.txt
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt  
+sudo ps -ef 2>/dev/null >>   $HOSTNAME-Requirement-2.txt
 
 echo "|=-----------------------=[PORTS IN LISTENING STATE]=------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo lsof -i -P -n | grep LISTEN >> $HOSTNAME-Requirement-2.txt
+sudo lsof -i -P -n | grep LISTEN 2>/dev/null >> $HOSTNAME-Requirement-2.txt
 
-echo "|=-----------------------=[NETWORK CONNECTION]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[NETWORK CONNECTION]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo netstate -a >> $HOSTNAME-Requirement-2.txt
+sudo netstat -a 2> /dev/null >> $HOSTNAME-Requirement-2.txt
 
-echo "|=-----------------------=[NETWORK INTERFACES]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[NETWORK INTERFACES]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo ip link show >> $HOSTNAME-Requirement-2.txt
+sudo ip link show 2> /dev/null >> $HOSTNAME-Requirement-2.txt
 
-echo "|=-----------------------=[KERNAL ROUTE TABLE]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=-----------------------=[KERNAL ROUTE TABLE]=------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo netstate -r >> $HOSTNAME-Requirement-2.txt
+sudo netstat -r 2>/dev/null >> $HOSTNAME-Requirement-2.txt
 
 echo "|=---------------------------=[IPv6 SUPPORT]=--------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
@@ -154,6 +154,7 @@ else
 		* ) echo "Account Active" >>   $HOSTNAME-Requirement-2.txt ;;
 	esac
 fi
+
 if [ ! "$rootpass" ]
 then 
 	chage -l root >>   $HOSTNAME-Requirement-2.txt
@@ -171,22 +172,25 @@ fi
 
 echo "--[ Interactive logon: Prompt user to change password before expiration ]" >>   $HOSTNAME-Requirement-2.txt 
 echo "checks /etc/login.defs for expiry warning configuration" >>   $HOSTNAME-Requirement-2.txt 
-sudo grep PASS_WARN_AGE /etc/login.defs >>    $HOSTNAME-Requirement-2.txt 
+sudo grep PASS_WARN_AGE /etc/login.defs 2>/dev/null >>    $HOSTNAME-Requirement-2.txt 
 
 echo "--[ Interactive logon: Message text for users attempting to log on ]" >>   $HOSTNAME-Requirement-2.txt 
 echo "checks /etc/motd" >>   $HOSTNAME-Requirement-2.txt
 sudo cat /etc/motd >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
 echo "checks /etc/sshd for banner" >>   $HOSTNAME-Requirement-2.txt
-sudo cat /etc/ssh/sshd_config  | grep Banner >>   $HOSTNAME-Requirement-2.txt
+sudo cat /etc/ssh/sshd_config  | grep Banner 2> /dev/null >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
 
-#echo "--[ System cryptography: Force strong key protection for user keys stored on the computer ]" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=----------------------------=[MOUNTED HARD DRIVES]=------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
+sudo cat /etc/fstab 2>/dev/null  >>   $HOSTNAME-Requirement-2.txt
 
 echo "|=----------------------------=[LOCAL DRIVES]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-sudo lshw -class disk  >>   $HOSTNAME-Requirement-2.txt 
+sudo lshw -class disk  2>/dev/null >>   $HOSTNAME-Requirement-2.txt 
 
 echo "|=--------------------------=[PACKAGES INSTALLED]=---------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
@@ -196,178 +200,212 @@ sudo apt list --installed >> $HOSTNAME-Requirement-2.txt  2> /dev/null|| sudo rp
 echo "|=--------------------------=[DRIVERS INSTALLED]=----------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.5                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-find /lib/modules/$(uname -r)/kernel/ -name '*.ko*' >> $HOSTNAME-Requirement-2.txt
+find /lib/modules/$(uname -r)/kernel/ -name '*.ko*' >> $HOSTNAME-Requirement-2.txt 2>/dev/null
 
 echo "|=----------------------------=[USB DRIVE]=----------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
 sudo lsmod | grep usb_storage  >> $HOSTNAME-Requirement-2.txt
-sudo ls /lib/modules/`uname -r`/kernel/drivers/usb/storage  >>   $HOSTNAME-Requirement-2.txt
+sudo ls /lib/modules/`uname -r`/kernel/drivers/usb/storage  >>   $HOSTNAME-Requirement-2.txt 2>/dev/null
 
-echo "|=--------------------------=[SHARED FOLDERS]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
-#echo "|= Related requirements: 2.2.5                                           	=|" >>   #$HOSTNAME-Requirement-2.txt
-echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo "|=----------------------=[ENCRYPTION METHOD FOR PASSWORD]=-----------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo "Getting encryption method used for password for all non console/remote ssh access" >> $HOSTNAME-Requirement-2.txt
+sudo cat /etc/login.defs | grep ENCRYPT_METHOD 2>/dev/null >>$HOSTNAME-Requirement-2.txt 
 
-smbvar=`sudo smbstatus --shares`
-if [ ! ”$smbvar” ]
-then
-	echo “SMB Service Not installed/ No shares found”
-else
-	echo “ SMB Shares are as Follows : $smbvar”
-fi
+echo "|=----------------------=[TELNET SERVICE STATUS]=---------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo "Make sure all insecure non console access/telnet is disabled or stopped" >> $HOSTNAME-Requirement-2.txt
+systemctl is-enabled telnet.socket >> $HOSTNAME-Requirement-2.txt 2>/dev/null
+echo "==============================================" >>$HOSTNAME-Requirement-2.txt
+netstat -lataupen | grep telnet >> $HOSTNAME-Requirement-2.txt 2>/dev/null
+echo "==============================================" >>$HOSTNAME-Requirement-2.txt
+ps -ef | grep telnet >> $HOSTNAME-Requirement-2.txt 2>/dev/null
 
-echo "|=----------------------=[ENCRYPTION METHOD FOR PASSWORD]=--------------------=|" >>   $HOSTNAME-Requirement-2.txt
-echo “Getting encryption method used for password for all non console(remote) ssh access ” >> $HOSTNAME-Requirement-2.txt
-sudo cat /etc/login.defs | grep ENCRYPT_METHOD >>$HOSTNAME-Requirement-2.txt
-
-echo "|=----------------------=[TELNET SERVICE STATUS]=-----------------------------=|" >>   $HOSTNAME-Requirement-2.txt
-echo “Making sure all insecure non console access(telnet) is diabled or stopped” >> $HOSTNAME-Requirement-2.txt
-systemctl is-enabled telnet.socket >>$HOSTNAME-Requirement-2.txt
-netstat -lataupen | grep telnet >>$HOSTNAME-Requirement-2.txt
-ps -ef | grep telnet >> $HOSTNAME-Requirement-2.txt
-
-
-echo "|=----------------------=[RSH SERVICE STATUS]=--------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
-echo “Making sure all insecure non console access(rsh) is diabled or stopped ” >> $HOSTNAME-Requirement-2.txt
-systemctl is-enabled rsh.socket >>$HOSTNAME-Requirement-2.txt
-systemctl is-enabled rlogin.socket >>$HOSTNAME-Requirement-2.txt
-systemctl is-enabled rexec.socket >>$HOSTNAME-Requirement-2.txt
-netstat -na | grep 514 >>$HOSTNAME-Requirement-2.txt
-ps -ef | grep rsh >>$HOSTNAME-Requirement-2.txt
-
-
+echo "|=----------------------=[RSH SERVICE STATUS]=-------------------------------=|" >>   $HOSTNAME-Requirement-2.txt
+echo "Make sure all insecure non console access/rsh is disabled or stopped" >> $HOSTNAME-Requirement-2.txt
+systemctl is-enabled rsh.socket 2>/dev/null >>$HOSTNAME-Requirement-2.txt
+echo "===============================================" >>$HOSTNAME-Requirement-2.txt
+systemctl is-enabled rlogin.socket 2>/dev/null >>$HOSTNAME-Requirement-2.txt
+echo "===============================================" >>$HOSTNAME-Requirement-2.txt
+systemctl is-enabled rexec.socket 2>/dev/null >>$HOSTNAME-Requirement-2.txt
+echo "===============================================" >>$HOSTNAME-Requirement-2.txt
+netstat -na | grep 514 2>/dev/null >>$HOSTNAME-Requirement-2.txt
+echo "===============================================" >>$HOSTNAME-Requirement-2.txt
+ps -ef | grep rsh 2>/dev/null >> $HOSTNAME-Requirement-2.txt
+echo "Done with req 2"
+echo "Audit req 3 manually"
+echo "Skipping req 3"
 echo "Getting Requirement 4" 
 echo "|=----------------------=[TLS VERSIONS]=-------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|= Related requirements: 4.1                                                 =|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
-echo "Check for TLS1.2 handshake" >>   $HOSTNAME-Requirement-4.txt 
-sudo openssl s_client -connect google.com:443 -tls1_2  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
+echo "Check TLS1.2 handshake" >>   $HOSTNAME-Requirement-4.txt 
+sudo echo "x" | openssl s_client -connect google.com:443 -tls1_2  2>/dev/null >> $HOSTNAME-Requirement-4.txt 
+echo "===============================================" >>$HOSTNAME-Requirement-4.txt
+echo "Check TLS1.1 handshake" >>   $HOSTNAME-Requirement-4.txt 
+sudo echo "x" | openssl s_client -connect google.com:443 -tls1_1  2>/dev/null >> $HOSTNAME-Requirement-4.txt 
+echo "===============================================" >>$HOSTNAME-Requirement-4.txt
+echo "Check TLS1.0 handshake" >>   $HOSTNAME-Requirement-4.txt 
+sudo echo "x" |openssl s_client -connect google.com:443 -tls1  2>/dev/null >> $HOSTNAME-Requirement-4.txt 
+echo "===============================================" >>$HOSTNAME-Requirement-4.txt
+echo "Check ssl2.0 handshake" >>   $HOSTNAME-Requirement-4.txt 
+sudo echo "x" |openssl s_client -connect google.com:443 -ssl2  2>/dev/null >> $HOSTNAME-Requirement-4.txt 
+echo "===============================================" >>$HOSTNAME-Requirement-4.txt
+echo "Check server accepts connections using ciphers from group NULL or LOW" >>   $HOSTNAME-Requirement-4.txt 
+sudo echo "x" |openssl s_client -connect google.com:443 -cipher NULL,LOW  2>/dev/null >> $HOSTNAME-Requirement-4.txt 
 
-echo "Check for TLS1.1 handshake" >>   $HOSTNAME-Requirement-4.txt 
-sudo openssl s_client -connect google.com:443 -tls1_1  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
-
-echo "Check for TLS1.0 handshake" >>   $HOSTNAME-Requirement-4.txt 
-sudo openssl s_client -connect google.com:443 -tls1  2>/dev/null >>   $HOSTNAME-Requirement-4.txt 
 
 echo "|=----------------------=[TLS VERSIONS]=-------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|= Related requirements: 4.2                                                 =|" >>   $HOSTNAME-Requirement-4.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-4.txt 
-echo "Check which service use ssl/tls dor transmitting data" >>   $HOSTNAME-Requirement-4.txt
-for I in $(find /usr/sbin -type f -print); do ldd ${I} | egrep -q "(ssl|tls)"; if [ $? -eq 0 ]; then echo ${I} >> $HOSTNAME-Requirement-4.txt; fi; done
-
+echo "Check service use ssl/tls dor transmitting data" >>   $HOSTNAME-Requirement-4.txt
+for I in `find /usr/sbin -type f -print`; do ldd ${I} | egrep -q 'ssl|tls'; if [ $? -eq 0 ]; then echo ${I} >> $HOSTNAME-Requirement-4.txt 2>/dev/null; fi; done
+echo ""
+echo "Done with req 4"
+echo ""
 echo "Getting Requirement 5"
 echo "|=----------------------=[ANTIVIRUS INSTALLED]=------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.1                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "Check ClamAV is installed or not" >>   $HOSTNAME-Requirement-5.txt
-[ ! -z `dpkg -l | egrep 'clamav|clamav-freshclam'` 2>/dev/null ] || [ ! -z `rpm -qa | egrep 'clamav|clamav-freshclam'` 2>/dev/null ] || [ ! -z `pacman -Q clamav` 2>/dev/null ] && echo "ClamAV is installed" || echo "ClamAV is not installed"
+`dpkg -l 2>/dev/null | egrep 'clamav|clamav-freshclam'` >>   $HOSTNAME-Requirement-5.txt || `rpm -qa 2>/dev/null | egrep 'clamav|clamav-freshclam'` >>   $HOSTNAME-Requirement-5.txt || `pacman -Q clamav 2>/dev/null` >>   $HOSTNAME-Requirement-5.txt 
+[ ! $@ ]&& echo "ClamAV is installed" >>   $HOSTNAME-Requirement-5.txt || echo "ClamAV is not installed" >>   $HOSTNAME-Requirement-5.txt
+
 echo ""
 
 echo "|=----------------------=[ANTIVIRUS RUNNING]=--------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.2                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "Check ClamAV service is running or not" >>   $HOSTNAME-Requirement-5.txt
-av=`systemctl is-enabled clamav` 
-[ "$av" == "enabled" ] && echo "ClamAV service is enabled" >> $HOSTNAME-Requirement-5.txt || echo "ClamAV service is not enabled" >> $HOSTNAME-Requirement-5.txt
-av1=`systemctl is-active clamav`
-[ "$av" == "active" ] && echo "ClamAV service is active" >> $HOSTNAME-Requirement-5.txt || echo "ClamAV service is not running" >>$HOSTNAME-Requirement-5.txt
+av=`systemctl is-enabled clamav 2>/dev/null`
+[ "$av" == "enabled" ] && echo "ClamAV service is enabled" 2> /dev/null >> $HOSTNAME-Requirement-5.txt || echo "ClamAV service is not enabled" >> $HOSTNAME-Requirement-5.txt 2> /dev/null
+av1=`systemctl is-active clamav 2>/dev/null`
+[ "$av" == "active" ] && echo "ClamAV service is active" >> $HOSTNAME-Requirement-5.txt 2>/dev/null || echo "ClamAV service is not running" >>$HOSTNAME-Requirement-5.txt 2>/dev/null
 
 echo "|=----------------------=[ANTIVIRUS SCAN]=--------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.2                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
-echo "Checking cronjobs for continous antivirus system scan using ClamAV " >>   $HOSTNAME-Requirement-5.txt
-systemctl status clamav >> $HOSTNAME-Requirement-5.txt
-crontab -l >> $HOSTNAME-Requirement-5.txt
-[ ! `find /etc/cron.daily -name clamav -print` ] && echo "No daily cron exist for clamav scan" >> $HOSTNAME-Requirement-5.txt || echo "Daily cron exist for clamav scan">> $HOSTNAME-Requirement-5.txt
-[ ! `find /etc/cron.hourly -name clamav -print` ] && echo "No hourly cron exist for clamav scan"  >>$HOSTNAME-Requirement-5.txt || echo "Hourly cron exist for clamav scan" >>   $HOSTNAME-Requirement-5.txt  
-
+echo "Checking cronjobs to continous antivirus system scan using ClamAV " >>   $HOSTNAME-Requirement-5.txt
+systemctl status clamav 2>/dev/null >> $HOSTNAME-Requirement-5.txt
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
+crontab -l 2>/dev/null >> $HOSTNAME-Requirement-5.txt
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
+[ ! `find /etc/cron.daily -name clamav -print 2>/dev/null` ] && echo "No daily cron exist of clamav scan" >> $HOSTNAME-Requirement-5.txt  || echo "Daily cron exist of clamav scan">> $HOSTNAME-Requirement-5.txt
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
+[ ! `find /etc/cron.hourly -name clamav -print 2>/dev/null` ] && echo "No hourly cron exist of clamav scan"  >>$HOSTNAME-Requirement-5.txt 2>/dev/null || echo "Hourly cron exist of clamav scan" >>   $HOSTNAME-Requirement-5.txt 
 
 echo "|=----------------------=[VIRUS SCAN LOGS]=--------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.2                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
-echo "Checking logs for virus detection" >>   $HOSTNAME-Requirement-5.txt
-v=`find /var/log -name clamav -print`
-[ ! $v ] && echo "No log file detect for clamav scan" >>$HOSTNAME-Requirement-5.txt || cat /var/log/clamav/scan.log | grep Infected >> $HOSTNAME-Requirement-5.txt echo "Log file exist for clamav scan logs"
+echo "Checking logs of virus detection" >>   $HOSTNAME-Requirement-5.txt
+v=`find /var/log -name clamav -print 2>/dev/null`
+[ ! $v ] && echo "No log file detect of clamav scan" >>$HOSTNAME-Requirement-5.txt || cat /var/log/clamav/scan.log | grep Infected 2>/dev/null echo "Log file exist of clamav scan logs" >> $HOSTNAME-Requirement-5.txt
 
 
 echo "|=----------------------=[VIRUS DETECTION UP-TO-DATE]=-----------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.3                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "Checking software is up-to-date" >>   $HOSTNAME-Requirement-5.txt
-clam=`ps -ef | grep -v grep | grep clamav-freshclam | wc -l`
-[ $clam -gr 0 ] && echo "ClamAV FreshClam service is running(this service checks update of virus)" >> $HOSTNAME-Requirement-5.txt || echo "ClamAV FreshClam service is not running(this service checks update of virus)" >> $HOSTNAME-Requirement-5.txt
-fr=`find /etc/clamav/ -name freshclam.conf -print`
+clam=`ps -ef | grep -v grep | grep clamav-freshclam | wc -l 2>/dev/null`
+[ $clam -gt 0 ] && echo "ClamAV FreshClam service is running as this service checks update of virus" >> $HOSTNAME-Requirement-5.txt || echo "ClamAV FreshClam service is not running as this service checks update of virus" >> $HOSTNAME-Requirement-5.txt 
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
+fr=`find /etc/clamav/ -name freshclam.conf -print 2>/dev/null`
 if [ ! $fr ]; then
 (
- echo "No confing exist for freshclam" >> HOSTNAME-Requirement-5.txt
+ echo "No freshclam config exist" >> HOSTNAME-Requirement-5.txt
 )
 else
 (
-chk=`grep checks $test | awk '{ print $2 }'`
-echo "Config exist for freshclam. checks update $val times a day" >> HOSTNAME-Requirement-5.txt
+chk=`grep checks $fr | awk '{ print $2 }' 2>/dev/null`
+echo "Freshclam config exist. checks update $chk times a day" >> HOSTNAME-Requirement-5.txt
 )
 fi
 
-echo "|=----------------------=[ FRESHCLAM LOG-FILE]=------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
+echo "|=----------------------=[ FRESHCLAM LOG-FILE ]=-----------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.2                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
-echo "Checking log file for freshclam" >>   $HOSTNAME-Requirement-5.txt
-[ ! `find /var/log/clamav -name freshclam.log -print` ] && echo "Freshclam log file dosen't exist" >> $HOSTNAME-Requirement-5.txt || echo "Freshclam log file exist" $HOSTNAME-Requirement-5.txt
+echo "Checking log file of freshclam" >>   $HOSTNAME-Requirement-5.txt
+[ ! `find /var/log/clamav -name freshclam.log -print 2>/dev/null` ] && echo "Freshclam log file dose not exist" >> $HOSTNAME-Requirement-5.txt || echo "Freshclam log file exist" $HOSTNAME-Requirement-5.txt
  
 echo "|=----------------------=[ CLAMSCAN AND CLAMD]=------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.2                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "Checking CLAMD service is running" >>   $HOSTNAME-Requirement-5.txt
-[ `ps -ef | grep -v grep | grep clamd | wc -l` -gr 0 ] && echo "Clamd service is running" >>   $HOSTNAME-Requirement-5.txt || echo "Clamd service is not running" >>   $HOSTNAME-Requirement-5.txt
+[ `ps -ef | grep -v grep | grep clamd | wc -l 2>/dev/null` -gt 0 ] && echo "Clamd service is running" >>   $HOSTNAME-Requirement-5.txt || echo "Clamd service is not running" >>   $HOSTNAME-Requirement-5.txt
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
 echo "Checking CLAMD conf file exist" >>   $HOSTNAME-Requirement-5.txt
-[ ! `find /etc/clamav -name clamd.conf -print` ] && echo "clamav.conf exist" >> $HOSTNAME-Requirement-5.txt || echo "clamav.conf does not exist" >> $HOSTNAME-Requirement-5.txt
+[ ! `find /etc/clamav -name clamd.conf -print 2>/dev/null` ] && echo "clamav.conf exist" >> $HOSTNAME-Requirement-5.txt || echo "clamav.conf does not exist" >> $HOSTNAME-Requirement-5.txt
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
 echo "Checking logging is enabled" >>   $HOSTNAME-Requirement-5.txt
-clamconf | grep log >> $HOSTNAME-Requirement-5.txt
+clamconf | grep log 2>/dev/null >> $HOSTNAME-Requirement-5.txt
 
-echo "|=----------------------=[ CONF FILE PERMISSIONS ]=------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
+echo "|=----------------------=[ CONF FILE PERMISSIONS ]=--------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.3                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "Checking permission on clamd.conf" >>   $HOSTNAME-Requirement-5.txt
-p1=`ls -alth /etc/clamav/clamd.conf | awk '{ print $3,$4}'`
+p1=`ls -alth /etc/clamav/clamd.conf 2>/dev/null | awk '{ print $3,$4}' `
 if [ -r /etc/clamav/clamd.conf ] && [ -w /etc/clamav/clamd.conf ]; then (echo "clamd.conf has read,write persmission by user,group $p1" >>   $HOSTNAME-Requirement-5.txt)
 else (echo "freshclam.conf does not have read,write persmission" >> $HOSTNAME-Requirement-5.txt)
 fi
-
+echo "===============================================" >>$HOSTNAME-Requirement-5.txt
 echo "Checking permission on freshclam.conf" >>   $HOSTNAME-Requirement-5.txt
-p2=`ls -alth /etc/clamav/freshclam.conf | awk '{ print $3,$4}'`
+p2=`ls -alth /etc/clamav/freshclam.conf 2>/dev/null | awk '{ print $3,$4}'`
 if [ -r /etc/clamav/fresclam.conf ] && [ -w /etc/clamav/freshclam.conf ]; then (echo "freshclam.conf has read,write persmission by user,group $p2" >>   $HOSTNAME-Requirement-5.txt) 
 else (echo "freshclam.conf does not have read,write persmission" >>   $HOSTNAME-Requirement-5.txt)
 fi
-
-
-
+echo "Done with req 5"
 echo "Getting Requirement 6"
-echo "|=------------------------------=[OS VERSION]=--------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
-echo "|= Related requirements: 6.2                                                  =|" >>   $HOSTNAME-Requirement-6.txt 
-echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
-hostnamectl |grep "Operating System:*" >>   $HOSTNAME-Requirement-6.txt 
-hostnamectl |grep "Kernel:*" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=---------------------------=[OS VERSION]=--------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|= Related requirements: 6.1                                                                             =|" >>   $HOSTNAME-Requirement-6.txt 
+echo "=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+hostnamectl |grep "Operating System:*" 2>/dev/null >>   $HOSTNAME-Requirement-6.txt 
+hostnamectl |grep "Kernel:*" 2>/dev/null >>   $HOSTNAME-Requirement-6.txt 
 
+echo "|=------------------------------=[LAST UPDATE DATE]=------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|= Related requirements: 6.1                                                                             =|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=-------------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "Checking when kernel updated last time" >>   $HOSTNAME-Requirement-6.txt 
+rpm -q kernel --last 2>/dev/null >> $HOSTNAME-Requirement-6.txt
+echo "===============================================" >>$HOSTNAME-Requirement-6.txt
+echo "Checking all package update date" >>   $HOSTNAME-Requirement-6.txt
+rpm -qa --last 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 
+echo "|=------------------------------=[PACKAGES TO UPDATE]=----------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|= Related requirements: 6.1                                                                             =|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=--------------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "Checking list of packages needs to be updated" >>   $HOSTNAME-Requirement-6.txt 
+yum list updates 2>/dev/null >> $HOSTNAME-Requirement-6.txt || dnf list updates 2>/dev/null >> $HOSTNAME-Requirement-6.txt || pacman -Qu 2>/dev/null >> $HOSTNAME-Requirement-6.txt || zypper list-updates 2>/dev/null >> $HOSTNAME-Requirement-6.txt || apt list --upgradable 2>/dev/null >> $HOSTNAME-Requirement-6.txt 
+[ ! $@ ] && echo "Packages needs to be updated are $@" >> $HOSTNAME-Requirement-6.txt || echo "No packages to update" >> $HOSTNAME-Requirement-6.txt
+echo "===============================================" >>$HOSTNAME-Requirement-6.txt
+echo "Checking installed/updated softwares" >>   $HOSTNAME-Requirement-6.txt
+yum history 2>/dev/null >> $HOSTNAME-Requirement-6.txt || cat var/log/apt/history.log 2>/dev/null >> $HOSTNAME-Requirement-6.txt
+echo "" >> $HOSTNAME-Requirement-6.txt
+echo "===============================================" >>$HOSTNAME-Requirement-6.txt
+echo "Checking log of installed/updated" >> $HOSTNAME-Requirement-6.txt
+cat /var/log/yum.log 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 
-echo "|=--------------------------=[OS UPDATES - SOURCES]=--------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
-echo "|= Related requirements: 6.2                                                  =|" >>   $HOSTNAME-Requirement-6.txt 
-echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=--------------------------=[OS UPDATES - SOURCES]=------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|= Related requirements: 6.2                                               =|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=-------------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
 sudo dnf repolist all 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 sudo grep ^[^#] /etc/apt/sources.list /etc/apt/sources.list.d/* 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 sudo yum repolist all 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 
+echo "|=--------------------------=[SECURITY UPDATES ]=---------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|= Related requirements: 6.2                                                                             =|" >>   $HOSTNAME-Requirement-6.txt 
+echo "|=-------------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-6.txt 
+yum check-update --security 2>/dev/null >> $HOSTNAME-Requirement-6.txt || cat /var/lib/update-notifier/update-available 2>/dev/null >> $HOSTNAME-Requirement-6.txt
 
+echo "Done with req 6"
 echo "Getting Requirement 7"
 echo "|=---------------------=[CURRENT USER PRIVILEGE RIGHTS]=---------------------=|" >>   $HOSTNAME-Requirement-7.txt 
 echo "|= Related requirements: 7.1 - 7.2                                           =|" >>   $HOSTNAME-Requirement-7.txt 
 echo "|= Please compare current values with your Security Configuration Standard   =|" >>   $HOSTNAME-Requirement-7.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-7.txt 
-echo "checks to see what group current user is part of (By Default members of wheel are sudoers in CentOS )" >>   $HOSTNAME-Requirement-7.txt 
+echo "checks to see what group current user is part of" >>   $HOSTNAME-Requirement-7.txt 
 grep $(whoami) /etc/group >>   $HOSTNAME-Requirement-7.txt 
 echo "" >>   $HOSTNAME-Requirement-7.txt 
 echo "Checks /etc/sudoers to see if user is added" >>   $HOSTNAME-Requirement-7.txt 
 file1="/etc/sudoers"
-sudoer1=`sudo grep $(whoami) /etc/sudoers`
+sudoer1=`sudo grep $(whoami) /etc/sudoers 2>/dev/null`
 if [ ! -f $file1 ]
 then
 	:
@@ -378,24 +416,44 @@ else
 	echo "$(whoami) Exists in the sudoers file" >>   $HOSTNAME-Requirement-7.txt 
 fi
 
+echo "|=---------------------=[ACCESS CONTROL SYSTEM ENFORCED]=--------------------=|" >>   $HOSTNAME-Requirement-7.txt 
+echo "|= Related requirements: 7.2                                                 =|" >>   $HOSTNAME-Requirement-7.txt 
+echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-7.txt 
+echo "Checking SELinux policy enforced" >> $HOSTNAME-Requirement-7.txt
+state=`grep SELINUX=enforcing /etc/selinux/config 2>/dev/null`
+[ ! $state ] && echo "SELinux enabled" >> $HOSTNAME-Requirement-7.txt || echo "SELinux not enforced" >> $HOSTNAME-Requirement-7.txt
+echo "===============================================" >>$HOSTNAME-Requirement-7.txt
+echo "Checking SELinux policy type" >> $HOSTNAME-Requirement-7.txt
+type=`grep SELINUXTYPE=targeted /etc/selinux/config 2>/dev/null`
+[ ! $type ] && echo "SELinux type targeted" >> $HOSTNAME-Requirement-7.txt || echo "SELinux type not set to targeted" >> $HOSTNAME-Requirement-7.txt
+echo "===============================================" >>$HOSTNAME-Requirement-7.txt
+echo "Checking SELinux troubleshoot package is installed" >> $HOSTNAME-Requirement-7.txt
+rpm -q setroubleshoot 2>/dev/null >> $HOSTNAME-Requirement-7.txt
+echo "===============================================" >>$HOSTNAME-Requirement-7.txt
+echo "Checking unconfined daemons" >> $HOSTNAME-Requirement-7.txt
+ps -eZ | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" | tr ':' ' ' | awk '{print $NF}' 2>/dev/null >> $HOSTNAME-Requirement-7.txt
+echo "===============================================" >>$HOSTNAME-Requirement-7.txt
+echo "Getting status of SELinux" >> $HOSTNAME-Requirement-7.txt
+sestatus 2>/dev/null >> $HOSTNAME-Requirement-7.txt
 
+echo "Done with req 7"
 echo "Getting Requirement 8"
 
-echo "|=-----------------------=[INACTIVE ACCOUNTS]=--------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1.                                                 =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------=[INACTIVE ACCOUNTS]=------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1.                                                                              =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "Getting inactive accounts more than or equal to 90 days" >> $HOSTNAME-Requirement-8.txt
-inactive=`lastlog -b 90 | tail -n+2 | grep -v '**Never log**' | awk '{print $1}'` >> /dev/null
+inactive=`lastlog -b 90 2>/dev/null | tail -n+2 | grep -v '**Never log**' | awk '{print $1}' 2>/dev/null`
 echo $inactive >> $HOSTNAME-Requirement-8.txt
 
-echo "|=-----------------------=[LOCKED/DISABLE INACTIVE ACCOUNTS]=-----------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.2.4                                                =|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "Checking user password locked for inactive user over 90 days" >> $HOSTNAME-Requirement-8.txt
-inact=`lastlog -b 5 | tail -n+2 | grep -v '**Never log**' | awk '{print $1}'` >> /dev/null
+echo "|=---------------------=[LOCKED/DISABLE INACTIVE ACCOUNTS]=-----------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.2.4                                                                            =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=--------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "Checking user password locked of inactive user over 90 days" >> $HOSTNAME-Requirement-8.txt
+inact=`lastlog -b 5 2>/dev/null | tail -n+2 | grep -v '**Never log**' | awk '{print $1}' 2>/dev/null`
 for line in $inact
 do
-lk=`passwd -S $line | awk '{print $2}'` >> /dev/null
+lk=`passwd -S $line | awk '{print $2}' 2> /dev/null`
 if [ "$lk" = "LK" ]; then
 ( echo "$line is locked" >> $HOSTNAME-Requirement-8.txt )
 else
@@ -404,51 +462,51 @@ fi
 done
 
 
-echo "|=-----------------------=[FILE INTEGRETY CHECK]=-----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------=[FILE INTEGRETY CHECK]=---------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.1                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
-echo "integrety check for both password files" >> $HOSTNAME-Requirement-8.txt
-pwck -r >> $HOSTNAME-Requirement-8.txt
+echo "integrety check of both password files" >> $HOSTNAME-Requirement-8.txt
+pwck -r 2>/dev/null >> $HOSTNAME-Requirement-8.txt
 
 
-echo "|=-----------------------=[FILE PERMISSION CHECK]=----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------=[FILE PERMISSION CHECK]=-------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1                                                                              =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "Checking Permission of passwd file" >> $HOSTNAME-Requirement-8.txt
-ls -alth | grep /etc/passwd >> $HOSTNAME-Requirement-8.txt
+ls -alth 2>/dev/null | grep /etc/passwd  >> $HOSTNAME-Requirement-8.txt
+echo "===============================================" >>$HOSTNAME-Requirement-8.txt
 echo "Checking Permission of shadow file" >> $HOSTNAME-Requirement-8.txt
-la -alth | grep /etc/shadow >> $HOSTNAME-Requirement-8.txt
+ls -alth 2>/dev/null | grep /etc/shadow  >> $HOSTNAME-Requirement-8.txt
+echo "===============================================" >>$HOSTNAME-Requirement-8.txt
 echo "Checking no other user has read access to shadow file" >> $HOSTNAME-Requirement-8.txt
-sh=`ls -alth || grep /etc/shadow | awk '{print $3}'`
-[ "$sh" = "root" ] && echo "Only root user has permission on shadow file" >> $HOSTNAME-Requirement-8.txt || echo "$sh user has permission"
- >> $HOSTNAME-Requirement-8.txt
-gr=`ls -alth || grep /etc/shadow | awk '{print $4}'`
-[ "$sh" = "root" ] && echo "Only root group has permission on shadow file" >> $HOSTNAME-Requirement-8.txt || echo "$gr group has permission"
- >> $HOSTNAME-Requirement-8.txt
+sh=`ls -alth | grep /etc/shadow | awk '{print $3}' 2>/dev/null` >> $HOSTNAME-Requirement-8.txt
+[ "$sh" = "root" ] && echo "Only root user has permission on shadow file" >> $HOSTNAME-Requirement-8.txt || echo "$sh user has permission" >> $HOSTNAME-Requirement-8.txt
+gr=`ls -alth | grep /etc/shadow | awk '{print $4}' 2>/dev/null` >> $HOSTNAME-Requirement-8.txt
+[ "$sh" = "root" ] && echo "Only root group has permission on shadow file" >> $HOSTNAME-Requirement-8.txt || echo "$gr group has permission" >> $HOSTNAME-Requirement-8.txt
 
-echo "|=-----------------------=[ENABLED LOCAL ACCOUNTS]=---------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1.4                                                =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------=[ENABLED LOCAL ACCOUNTS]=------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1.4                                                                            =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-awk -F: '$NF!~/\/!false$/ && $NF!~/\/!nologin$/' /etc/passwd  >>   $HOSTNAME-Requirement-8.txt
+awk -F: '$NF!~/\/!false$/ && $NF!~/\/!nologin$/' /etc/passwd  2>/dev/null >> $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
 
-echo "|=-----------------------=[DISABLED LOCAL ACCOUNTS]=--------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1.4                                                =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------=[DISABLED LOCAL ACCOUNTS]=-----------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1.4                                                                            =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "---accounts not allowed to logon---" >>   $HOSTNAME-Requirement-8.txt
-awk -F: '$NF!~/\/!nologin$/' /etc/passwd >>   $HOSTNAME-Requirement-8.txt
+awk -F: '$NF!~/\/!nologin$/' /etc/passwd 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 echo "---accounts with password disabled/Not able to logon---" >>   $HOSTNAME-Requirement-8.txt
-sudo cat /etc/shadow |grep '!' >>   $HOSTNAME-Requirement-8.txt
+sudo cat /etc/shadow |grep '!' 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
-echo "|=---------------------------=[ACCOUNT LOCKOUT]=------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.1.6                                                =|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
+echo "|=---------------------------=[ACCOUNT LOCKOUT]=----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.1.6                                                                             =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=--------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
 echo " This checks /etc/pam.d/system-auth and /etc/pam.d/password-auth to see if a pam_faillock.so line is set " >>   $HOSTNAME-Requirement-8.txt 
-sysauth1=`sudo cat /etc/pam.d/system-auth | grep faillock`
-passauth1=`sudo cat /etc/pam.d/password-auth | grep faillock`
+sysauth1=`sudo cat /etc/pam.d/system-auth | grep faillock 2>/dev/null`
+passauth1=`sudo cat /etc/pam.d/password-auth | grep faillock 2>/dev/null`
 if [[ ! "$sysauth1" && ! "$passauth1" ]]
 then
 	echo " pam.d/system-auth and pam.d/password-auth dont have any Password lockout attempt settings!"  >>   $HOSTNAME-Requirement-8.txt 
@@ -470,7 +528,7 @@ echo "|=----------------------=[ACCOUNT LOCKOUT DURATION]=----------------------
 echo "|= Related requirements: 8.1.7                                                =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "::This Checks Account Lockout duration as set in PAM::"  >>   $HOSTNAME-Requirement-8.txt
-cat /etc/pam.d/system-auth |grep "unlock_time*" >>   $HOSTNAME-Requirement-8.txt
+cat /etc/pam.d/system-auth |grep "unlock_time*" 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
 
@@ -480,70 +538,64 @@ echo "|=------------------------------------------------------------------------
 
 echo "--[ Console timeout ]" >>   $HOSTNAME-Requirement-8.txt 
 echo "This setting is intended to log a user out of the console if inactive" >>   $HOSTNAME-Requirement-8.txt 
-logout1=`cat ~/.bashrc |grep TMOUT`
-logout2=`cat ~/.bash_profile |grep TMOUT`
+logout1=`cat ~/.bashrc |grep TMOUT 2>/dev/null`
+logout2=`cat ~/.bash_profile |grep TMOUT 2>/dev/null`
 if [[ ! "$logout1" && ! "$logout2" ]]
 then
-	echo "No Console timeout settings found in bashrc or bash_profile, This does not mean there is no console timeout set as there may be other scripts to do this! " >>   $HOSTNAME-Requirement-8.txt
+	echo "No Console timeout settings found in bashrc or bash_profile, This does not mean there is no console timeout set as there may be other scripts to do this! " >>  $HOSTNAME-Requirement-8.txt
 fi
+
 if [ ! -z "$logout1" ]
 then
 	echo ".bashrc :: Time out settings in seconds:"$logout1" >>   $HOSTNAME-Requirement-8.txt
-        [ $logout1 = 900 ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
+        [ "$logout1" = "900" ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
 if [ ! -z "$logout2" ]
 then
 	echo ".bash_profile :: Time out settings in seconds:"$logout2 >>   $HOSTNAME-Requirement-8.txt
-        [ $logout2 = 900 ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
+        [ "$logout2" = "900" ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
 
 echo "--[ SSH Timeout ]" >>   $HOSTNAME-Requirement-8.txt
 echo "This setting logs a SSH user out after a period of time" >>   $HOSTNAME-Requirement-8.txt
 
 echo "Alive interval" >>   $HOSTNAME-Requirement-8.txt
-sudo cat sshd_config 2>/dev/null| grep ClientAliveInterval >>   $HOSTNAME-Requirement-8.txt
+sudo cat /etc/ssh/sshd_config 2>/dev/null| grep ClientAliveInterval >>   $HOSTNAME-Requirement-8.txt
 echo "Client alive count" >>   $HOSTNAME-Requirement-8.txt
-sudo cat sshd_config 2>/dev/null| grep  ClientAliveCountMax >>   $HOSTNAME-Requirement-8.txt
+sudo cat /etc/ssh/sshd_config 2>/dev/null| grep  ClientAliveCountMax >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
 echo "|=---------------------=[PASSWORD STORE CONFIGURATION]=----------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.2.1                                               =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
-echo "this checks /etc/pam.d/system-auth to see what settings are present for password encryption" >>   $HOSTNAME-Requirement-8.txt
-encryp1=`sudo cat /etc/pam.d/system-auth 2>/dev/null|grep pam_unix.so`
+echo "this checks /etc/pam.d/system-auth to see password encryption settings" >>   $HOSTNAME-Requirement-8.txt
+encryp1=`sudo cat /etc/pam.d/system-auth 2>/dev/null |grep pam_unix.so`
 if [[ $encryp1 =~ sha512 ]]
 then 
-	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null|grep sha512` >>   $HOSTNAME-Requirement-8.txt
+	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null |grep sha512` >>   $HOSTNAME-Requirement-8.txt
 elif [[ $encryp1 =~ sha256 ]]
 then
-	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null|grep sha256` >>   $HOSTNAME-Requirement-8.txt
+	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null |grep sha256` >>   $HOSTNAME-Requirement-8.txt
 elif [[ $encryp1 =~ bigcrypt ]]
 then
-	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null|grep bigcrypt` >>   $HOSTNAME-Requirement-8.txt
+	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null |grep bigcrypt` >>   $HOSTNAME-Requirement-8.txt
 elif [[ $encryp1 =~ blowfish ]]
 then
-	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null|grep blowfish` >>   $HOSTNAME-Requirement-8.txt
+	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null |grep blowfish` >>   $HOSTNAME-Requirement-8.txt
 elif [[ $encryp1 =~ md5 ]]
 then
-	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null|grep md5` >>   $HOSTNAME-Requirement-8.txt
+	echo `sudo cat /etc/pam.d/system-auth 2>/dev/null |grep md5` >>   $HOSTNAME-Requirement-8.txt
 else
-	echo "No Encryption found in /etc/pam.d/system-auth for pam_unix.so" >>   $HOSTNAME-Requirement-8.txt
+	echo "No Encryption found /etc/pam.d/system-auth matching pam_unix.so" >>   $HOSTNAME-Requirement-8.txt
 fi
 echo ""  >>   $HOSTNAME-Requirement-8.txt
 echo "This Checks /etc/passwd and /etc/shadow to see what permissions are set on them" >>   $HOSTNAME-Requirement-8.txt
-passwd1=`stat -c %a /etc/passwd`
+passwd1=`stat -c %a /etc/passwd 2>/dev/null`
 echo "/etc/passwd has the  permissions set to $passwd1" >>   $HOSTNAME-Requirement-8.txt
-shadow1=`stat -c %a /etc/shadow`
+shadow1=`stat -c %a /etc/shadow 2>/dev/null`
 echo "/etc/shadow has the permissions set to $shadow1" >>   $HOSTNAME-Requirement-8.txt
-echo "The 'other' group should never have read access to the shadow file, as it contains the hashed passwords." >>   $HOSTNAME-Requirement-8.txt
-
+echo "The other group should never have read access to the shadow file, as it contains the hashed passwords." >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
-
-echo "|=--------------------------=[ENCRYPTION METHOD]=------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.2.1a                                                =|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|=-----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "Getting encryption used in /etc/shadow file" >>   $HOSTNAME-Requirement-8.txt
-en=`/etc/shadow | awk '{print $3}'`| cut -d : -f 2 | cut -d $ -f 2
 
 echo "|=--------------------------=[PASSWORD LENGTH]=-------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.2.3                                                =|" >>   $HOSTNAME-Requirement-8.txt 
@@ -699,21 +751,21 @@ else
 	echo "/etc/security/pwquality.conf has Other Character requirement set as $othchar1" >>   $HOSTNAME-Requirement-8.txt 
 fi
 
-file2="/etc/pam.d/system-auth"
+file2=/etc/pam.d/system-auth
 lowcase2=`grep lcredit /etc/pam.d/system-auth 2>/dev/null |grep pam_cracklib.so`
 upcase2=`grep ucredit /etc/pam.d/system-auth 2>/dev/null |grep pam_cracklib.so`
 digit2=`grep dcredit /etc/pam.d/system-auth 2>/dev/null |grep pam_cracklib.so`
 othchar2=`grep ocredit /etc/pam.d/system-auth 2>/dev/null |grep pam_cracklib.so`
 
-if [ ! -f "$file2" ]
+if [ ! -f $file2 ]
 then
-	echo " no file found for "$file2""
-elif [[ -f "$file2" && ! $lowcase2 ]]
+	echo "no file found $file2"
+elif [[ -f $file2 && ! $lowcase2 ]]
 then
-	echo "/etc/pam.d/system-auth has no lowercase Requirement for password" >>   $HOSTNAME-Requirement-8.txt 
+	echo "/etc/pam.d/system-auth has no lowercase Requirement password" >>   $HOSTNAME-Requirement-8.txt 
 elif [[ "$lowcase2" =~ "#" ]]
 then
-	echo "/etc/pam.d/system-auth has lower case requirement set as $lowcase2, But its commented out! " >>   $HOSTNAME-Requirement-8.txt 
+	echo "/etc/pam.d/system-auth has lowercase requirement set as $lowcase2, But its commented out! " >>   $HOSTNAME-Requirement-8.txt 
 else
 	echo "/etc/pam.d/system-auth has lowercase requirement set as $lowcase2" >>   $HOSTNAME-Requirement-8.txt 
 fi
@@ -799,14 +851,15 @@ sa=/etc/pam.d/system-auth
 if [ -a $cp ]
 then 
 ( 
-egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $cp 
+egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $cp 2>/dev/null
 [ ! $@ ] && echo "no authenticator config exist in common-password file" >> $HOSTNAME_Requirement-8.txt || echo $@ >> $HOSTNAME_Requirement-8.txt
 )
 elif [ -a $pa ]
 then
 ( 
-egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $pa 
-[ ! $@ ] && echo "no authenticator config exist in password-auth" >> $HOSTNAME_Requirement-8.txt || echo $@ >> $HOSTNAME_Requirement-8.txt )
+egrep -w 'pam_google_authenticator.so|pam_yubikey.so' $pa 2>/dev/null 
+[ ! $@ ] && echo "no authenticator config exist in password-auth" >> $HOSTNAME_Requirement-8.txt || echo $@ >> $HOSTNAME_Requirement-8.txt 
+)
 else
 (
 echo "both file not exist" >> $HOSTNAME_Requirement-8.txt
@@ -818,10 +871,8 @@ echo "|=-----------------------------=[LOGIN SHELLS]=---------------------------
 echo "|= Related requirements: 8.5                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.t
 echo "checking which shells are valid/allowd" >> $HOSTNAME-Requirement-8.txt
-cat /etc/shells >> $HOSTNAME-Requirement-8.txt
+cat /etc/shells 2>/dev/null >> $HOSTNAME-Requirement-8.txt
 echo "" >> $HOSTNAME-Requirement-8.txt
-
-
 
 echo "" >>   $HOSTNAME-Requirement-8.txt
 echo "|=-----------------------------=[LOCAL ACCOUNTS]=-----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
@@ -829,7 +880,7 @@ echo "|= Related requirements: 8.5                                              
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo " this pulls information from the /etc/passwd file! "  >>   $HOSTNAME-Requirement-8.txt
 echo ""  >>   $HOSTNAME-Requirement-8.txt
-sudo cat /etc/passwd | awk -F: '{ print $1}'  >>   $HOSTNAME-Requirement-8.txt
+sudo cat /etc/passwd | awk -F: '{ print $1}' 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo ""  >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
@@ -838,41 +889,59 @@ echo "|=-------------------------=[LOCAL ADMINISTRATORS]=-----------------------
 echo "|= Related requirements: 8.5                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "lists Users in the wheel group " >>   $HOSTNAME-Requirement-8.txt
-sudo getent group wheel >>   $HOSTNAME-Requirement-8.txt
+sudo getent group wheel 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "lists Users in the admin group " >>   $HOSTNAME-Requirement-8.txt
-sudo getent group admin >>   $HOSTNAME-Requirement-8.txt
+sudo getent group admin 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "lists Users in the sudo group " >>   $HOSTNAME-Requirement-8.txt
-sudo getent group sudo >>   $HOSTNAME-Requirement-8.txt
+sudo getent group sudo 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "lists Users in the staff group " >>   $HOSTNAME-Requirement-8.txt
-sudo getent group staff >>   $HOSTNAME-Requirement-8.txt
+sudo getent group staff 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "lists Users in the sudoers group " >>   $HOSTNAME-Requirement-8.txt
-sudo getent group sudoers >>   $HOSTNAME-Requirement-8.txt
+sudo getent group sudoers 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 
 echo "" >>   $HOSTNAME-Requirement-8.txt
-echo "|=-----------------------------=[LOCAL GROUPS]=-------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
-echo "|= Related requirements: 8.5                                                  =|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|=-----------------------------=[LOCAL GROUPS]=-----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "|= Related requirements: 8.5                                                                               =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "This pulls information from the /etc/group file!"  >>   $HOSTNAME-Requirement-8.txt
-sudo cat /etc/group | awk -F: '{ print $1}' >>   $HOSTNAME-Requirement-8.txt
+sudo cat /etc/group | awk -F: '{ print $1}' 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo ""  >>   $HOSTNAME-Requirement-8.txt
-echo ""  >>   $HOSTNAME-Requirement-8.txt
-echo "" >>   $HOSTNAME-Requirement-8.txt
-
-
+echo ""
+echo "Done with req 8"
+echo ""
+echo "Skipping req 9"
+echo ""
 echo "Getting Requirement 10"
+echo "|=-----------------------=[LOGGING CONFIGURATION]=----------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|= Related requirements: 10.1.1                                               =|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+sudo cat /etc/rsyslog.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "===============================================" >>$HOSTNAME-Requirement-10.txt
+sudo cat /etc/syslog.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "===============================================" >>$HOSTNAME-Requirement-10.txt
+sudo cat /etc/rsyslog.d/* 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "===============================================" >>$HOSTNAME-Requirement-10.txt
+sudo cat /var/log/syslog 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "===============================================" >>$HOSTNAME-Requirement-10.txt
+sudo cat /var/log/auth.log 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "===============================================" >>$HOSTNAME-Requirement-10.txt
+sudo cat /var/log/secure 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "" >> $HOSTNAME-Requirement-10.txt
+
 echo "|=-----------------------=[EVENTLOG - SERVICE STATUS]=------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.2 - 10.3                                          =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 sudo service rsyslog status 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt
 sudo service syslog status 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 
 echo "" >>   $HOSTNAME-Requirement-10.txt
 echo "|=---------------------------=[LOG CONFIGURATION]=----------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.2 - 10.3                                          =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
-echo " -- This Checks the /etc/rsyslog.conf file for logging configuration -- " >> $HOSTNAME-Requirement-10.txt
+echo " -- This Checks the logging configuration /etc/rsyslog.conf -- " >> $HOSTNAME-Requirement-10.txt
 echo "authpriv: Messages coming from authorization and security related events" >> $HOSTNAME-Requirement-10.txt
-auth1=`grep auth /etc/rsyslog.conf`
+auth1=`grep auth /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$auth1" && "$auth1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -922,7 +991,7 @@ fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 
 echo "authpriv: Messages coming from authorization and security related events" >> $HOSTNAME-Requirement-10.txt
-authpriv1=`grep authpriv /etc/rsyslog.conf`
+authpriv1=`grep authpriv /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$authpriv1" && "$authpriv1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -971,7 +1040,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "kern: Any message coming from the Linux kernel" >> $HOSTNAME-Requirement-10.txt
-kern1=`grep kern /etc/rsyslog.conf`
+kern1=`grep kern /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$kern1" && "$kern1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1020,7 +1089,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "mail: Messages generated by the mail subsystem" >> $HOSTNAME-Requirement-10.txt
-mail1=`grep mail /etc/rsyslog.conf`
+mail1=`grep mail /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$mail1" && "$mail1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1069,7 +1138,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "cron: Cron daemon related messages" >> $HOSTNAME-Requirement-10.txt
-cron1=`grep cron /etc/rsyslog.conf`
+cron1=`grep cron /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$cron1" && "$cron1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1167,7 +1236,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "news: Messages coming from network news subsystem" >> $HOSTNAME-Requirement-10.txt
-news1=`grep news /etc/rsyslog.conf`
+news1=`grep news /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$news1" && "$news1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1216,7 +1285,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "lpr: Printing related log messages" >> $HOSTNAME-Requirement-10.txt
-lpr1=`grep lpr /etc/rsyslog.conf`
+lpr1=`grep lpr /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$lpr1" && "$lpr1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1265,7 +1334,7 @@ else
 fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "user: Log messages coming from user programs" >> $HOSTNAME-Requirement-10.txt
-user1=`grep user /etc/rsyslog.conf`
+user1=`grep user /etc/rsyslog.conf 2>/dev/null`
 if [[ ! -z "$user1" && "$user1" =~ ".=" ]]
 then
 	value1="Equal to and greater than"
@@ -1315,31 +1384,41 @@ fi
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "" >> $HOSTNAME-Requirement-10.txt
 #check Logrotate.conf for settings
-echo "-- this checks the /etc/logrotate.conf file for its settings -- " >> $HOSTNAME-Requirement-10.txt
-sudo cat /etc/logrotate.conf  >> $HOSTNAME-Requirement-10.txt
+echo "this checks /etc/logrotate.conf settings" >> $HOSTNAME-Requirement-10.txt
+sudo cat /etc/logrotate.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 
 echo "" >>   $HOSTNAME-Requirement-10.txt
-echo "|=------------------------------=[Audit Log]=------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|=------------------------------=[Audit Log]=---------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.2 - 10.3                                          =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "Audit service status" >> $HOSTNAME-Requirement-10.txt
 sudo auditctl -s 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+echo "=================================================" >> $HOSTNAME-Requirement-10.txt
+sudo systemctl is-enabled auditd 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "" >> $HOSTNAME-Requirement-10.txt
-
+echo "=================================================" >> $HOSTNAME-Requirement-10.txt
 echo "Audit Configuration" >> $HOSTNAME-Requirement-10.txt
 sudo cat /etc/audit/auditd.conf >> $HOSTNAME-Requirement-10.txt
+
+echo "|=------------------------------=[EVENT WITH AUDIT]=--------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|= Related requirements: 10.2 - 10.3                                          =|" >>   $HOSTNAME-Requirement-10.txt 
+echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
+echo "Record events that modify Date and Time" >> $HOSTNAME-Requirement-10.txt
+grep time-change /etc/audit/audit.rules 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+
 echo "" >>   $HOSTNAME-Requirement-10.txt
 echo "|=-------------------------=[NTP - SERVICE STATUS]=---------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.4                                                 =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
-sudo systemctl status ntpd >> $HOSTNAME-Requirement-10.txt
+sudo systemctl status ntpd 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
 
 echo "|=---------------------------=[NTP CONFIGURATION]=----------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.4.3                                               =|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
-sudo cat /etc/ntp.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
+sudo cat /etc/ntp.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt || sudo cat /etc/xntp.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "" >>   $HOSTNAME-Requirement-10.txt
+
 echo "" >>   $HOSTNAME-Requirement-10.txt
 echo "|=---------------------------=[NTP PEERS]=------------------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.4.3                                               =|" >>   $HOSTNAME-Requirement-10.txt 
@@ -1353,4 +1432,10 @@ echo "|=------------------------------------------------------------------------
 sudo ntpstat 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 echo "">>   $HOSTNAME-Requirement-10.txt
 
-echo "Finished, files have been generated for review in $(pwd) "
+echo "Done with req 10"
+echo "Skipping req 11"
+echo "Skipping req 12"
+duration=$(echo "$(date +%s.%N) - $start" | bc)
+execution_time=`printf "%.2f seconds" $duration`
+echo "Test completes in $execution_time"
+echo "Evidence of tests has been collected for review in $(pwd)"
