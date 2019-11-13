@@ -142,19 +142,19 @@ echo "firewall-cmd --get-zones" >> $HOSTNAME-Requirement-1.txt
 firewall-cmd --get-zones 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "========================================================================" >> $HOSTNAME-Requirement-1.txt
 echo "firewall-cmd --get-active-zones" >> $HOSTNAME-Requirement-1.txt
-`firewall-cmd --get-active-zones` 2>/dev/null >> $HOSTNAME-Requirement-1.txt
-dmz=`firewall-cmd --get-active-zones | grep dmz`
+`firewall-cmd --get-active-zones 2>/dev/null` >> $HOSTNAME-Requirement-1.txt
+dmz=`firewall-cmd --get-active-zones 2>/dev/null | grep dmz`
 [ ! $dmz ] && echo "DMZ is not activated" >> $HOSTNAME-Requirement-1.txt || echo "DMZ is activated" >> $HOSTNAME-Requirement-1.txt
 echo "========================================================================" >> $HOSTNAME-Requirement-1.txt
 echo "firewall-cmd --zone=dmz --list-ports" >> $HOSTNAME-Requirement-1.txt
-    `firewall-cmd --zone=dmz --list-ports` 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+    `firewall-cmd --zone=dmz --list-ports 2>/dev/null` >> $HOSTNAME-Requirement-1.txt
 echo "======================================================================="
  >> $HOSTNAME-Requirement-1.txt
     echo "firewall-cmd --zone=dmz --list-protocols" >> $HOSTNAME-Requirement-1.txt
-    `firewall-cmd --zone=dmz --list-protocols` 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+    `firewall-cmd --zone=dmz --list-protocols 2>/dev/null` >> $HOSTNAME-Requirement-1.txt
 echo "=======================================================================" >> $HOSTNAME-Requirement-1.txt
     echo "firewall-cmd --zone=dmz --list-services" >> $HOSTNAME-Requirement-1.txt
-    `firewall-cmd --zone=dmz --list-services` 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+    `firewall-cmd --zone=dmz --list-services 2>/dev/null` >> $HOSTNAME-Requirement-1.txt
 
 
 echo "|= Related requirements: 1.1.6                                              =|" >> $HOSTNAME-Requirement-1.txt
@@ -198,16 +198,16 @@ echo "NFS share configuration" >> $HOSTNAME-Requirement-1.txt
 cat /etc/exports 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "NFS package installed or not" >> $HOSTNAME-Requirement-1.txt
-dpkg -l 2>/dev/null | grep nfs-common  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'nfs-kernel-server|nfs-utils'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q nfs-utils 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se nfs-common $HOSTNAME-Requirement-1.txt || dnf list nfs-common 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+dpkg -l 2>/dev/null | grep nfs-common  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'nfs-kernel-server|nfs-utils'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q nfs-utils 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se nfs-common 2>/dev/null >> $HOSTNAME-Requirement-1.txt || dnf list nfs-common 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 
 
 echo "|=----------------------=[PRINTER SERVICE STATUS]=-------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "Checking CUPS package is installed or not" >> $HOSTNAME-Requirement-1.txt
-dpkg -l 2>/dev/null | grep cups  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | grep cups  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se cups $HOSTNAME-Requirement-1.txt || dnf list cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+dpkg -l 2>/dev/null | grep cups  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | grep cups  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt || dnf list cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "Checking printing service is enabled on boot" >> $HOSTNAME-Requirement-1.txt
-systemctl is-enabled cups 2>/dev/null $HOSTNAME-Requirement-1.txt|| chkconfig cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+systemctl is-enabled cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt|| chkconfig cups 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "Checking printing service status" >> $HOSTNAME-Requirement-1.txt
 service cups status 2>/dev/null >> $HOSTNAME-Requirement-1.txt|| systemctl status cups  2>/dev/null || chkconfig cups 2>/dev/null >>$HOSTNAME-Requirement-1.txt
@@ -218,7 +218,7 @@ cat /etc/cups/cupsd.conf 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "|=----------------------=[FTP SERVICE STATUS]=-------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "Checking FTP installed or not" >> $HOSTNAME-Requirement-1.txt
-dpkg -l 2>/dev/null | egrep 'ftp|vsftpd'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'ftp|vsftp'   >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q 'ftp|vsftp' 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se ftp vsftp $HOSTNAME-Requirement-1.txt || dnf list ftp vsftp 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+dpkg -l 2>/dev/null | egrep 'ftp|vsftpd'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'ftp|vsftp'   >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q 'ftp|vsftp' 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se ftp vsftp 2>/dev/null >> $HOSTNAME-Requirement-1.txt || dnf list ftp vsftp 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "Checking FTP service is enabled on boot" >> $HOSTNAME-Requirement-1.txt
 systemctl is-enabled ftp 2>/dev/null $HOSTNAME-Requirement-1.txt|| chkconfig ftp 2>/dev/null >> $HOSTNAME-Requirement-1.txt
@@ -244,7 +244,7 @@ service telnet status 2>/dev/null >> $HOSTNAME-Requirement-1.txt|| systemctl sta
 echo "|=----------------------=[SMTP SERVICE STATUS]=-------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "Cheking sendmail package is installed on not" >> $HOSTNAME-Requirement-1.txt
-dpkg -l 2>/dev/null | egrep 'sendmail|postfix'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'sendmail|postfix'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q 'sendmail|postfix' 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se 'sendmail|postfix' $HOSTNAME-Requirement-1.txt || dnf list 'sendmail|postfix' 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+dpkg -l 2>/dev/null | egrep 'sendmail|postfix'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'sendmail|postfix'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q 'sendmail|postfix' 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se 'sendmail|postfix' 2>/dev/null >> $HOSTNAME-Requirement-1.txt || dnf list 'sendmail|postfix' 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "Checking senmail/postfix service is enabled on boot" >> $HOSTNAME-Requirement-1.txt
 systemctl is-enabled sendmail postfix 2>/dev/null >> $HOSTNAME-Requirement-1.txt|| chkconfig sendmail postfix 2>/dev/null >> $HOSTNAME-Requirement-1.txt
@@ -261,7 +261,7 @@ cat /etc/postfix/main.cf 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "|=----------------------=[HTTP SERVICE STATUS]=-------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "Checking http is installed or not" >> $HOSTNAME-Requirement-1.txt
-dpkg -l 2>/dev/null | egrep 'httpd|httpd|apache'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'http|httpd|apache'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q http httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se http httpd apache $HOSTNAME-Requirement-1.txt || dnf list httpd httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+dpkg -l 2>/dev/null | egrep 'httpd|httpd|apache'  >> $HOSTNAME-Requirement-1.txt|| rpm -qa 2>/dev/null | egrep 'http|httpd|apache'  >> $HOSTNAME-Requirement-1.txt 2>/dev/null || pacman -Q http httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper se http httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt || dnf list httpd httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "===============================================" >>$HOSTNAME-Requirement-1.txt
 echo "Checking http service is enabled on boot" >> $HOSTNAME-Requirement-1.txt
 systemctl is-enabled http httpd apache 2>/dev/null $HOSTNAME-Requirement-1.txt|| chkconfig http httpd apache 2>/dev/null >> $HOSTNAME-Requirement-1.txt
@@ -290,8 +290,8 @@ cat /etc/snmp/snmp.conf 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 echo "|=----------------------=[DEVLOPMENT TOOLS PACKAGE]=-----------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-1.txt
 echo "Make sure Developement tools is not installed already" >> $HOSTNAME-Requirement-1.txt
-yum grouplist | grep "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt || 
-dnf grouplist | grep "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt || pacman -Sg Developement Tools 2>/dev/null >> $HOSTNAME-Requirement-1.txt || tasksel --task-desc "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper info pattern "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt
+yum grouplist 2>/dev/null | grep "Development Tools" >> $HOSTNAME-Requirement-1.txt || 
+dnf grouplist 2>/dev/null | grep "Development Tools" >> $HOSTNAME-Requirement-1.txt || pacman -Sg Developement Tools 2>/dev/null >> $HOSTNAME-Requirement-1.txt || tasksel --task-desc "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt || zypper info pattern "Development Tools" 2>/dev/null >> $HOSTNAME-Requirement-1.txt
 
 echo "|=------------------=[FIREWALLD START AT BOOT]=-----------------------=|" >>   $HOSTNAME-Requirement-1.txt 
 echo "|= Related requirements: 1.2.2                                        =|" >> $HOSTNAME-Requirement-1.txt 
@@ -315,6 +315,7 @@ echo "Overwrites the value 0 to 1 to enable source address verification" >>$HOST
 
 echo "related req 1.3.5" >>$HOSTNAME-Requirement-1.txt
 echo "Permit only “established” connections into the network" >>$HOSTNAME-Requirement-1.txt
+egrep -w 'ESTABLISHED' /etc/iptables.up.rules 2>/dev/null >>$HOSTNAME-Requirement-1.txt || egrep -w 'ESTABLISHED' /etc/sysconfig/iptables >>$HOSTNAME-Requirement-1.txt
 
 echo "related req 1.3.7" >>$HOSTNAME-Requirement-1.txt
 echo "Do not disclose private IP addresses and routing information to unauthorized parties" >>$HOSTNAME-Requirement-1.txt
@@ -422,7 +423,7 @@ sudo netstat -r 2>/dev/null >> $HOSTNAME-Requirement-2.txt
 echo "|=---------------------------=[IPv6 SUPPORT]=--------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|= Related requirements: 2.2.2                                               =|" >>   $HOSTNAME-Requirement-2.txt 
 echo "|=---------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
-ipv6=`ifconfig|grep inet6`
+ipv6=`ip a 2>/dev/null |grep inet6`
 if [ ! "$ipv6" ] 
 then
 	echo "IPv6 Disabled!" >> $HOSTNAME-Requirement-2.txt
@@ -468,10 +469,10 @@ sudo grep PASS_WARN_AGE /etc/login.defs 2>/dev/null >>    $HOSTNAME-Requirement-
 
 echo "--[ Interactive logon: Message text for users attempting to log on ]" >>   $HOSTNAME-Requirement-2.txt 
 echo "checks /etc/motd" >>   $HOSTNAME-Requirement-2.txt
-sudo cat /etc/motd >>   $HOSTNAME-Requirement-2.txt
+sudo cat /etc/motd 2>/dev/null >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
 echo "checks /etc/sshd for banner" >>   $HOSTNAME-Requirement-2.txt
-sudo cat /etc/ssh/sshd_config  | grep Banner 2> /dev/null >>   $HOSTNAME-Requirement-2.txt
+sudo cat /etc/ssh/sshd_config  2>/dev/null | grep Banner >>   $HOSTNAME-Requirement-2.txt
 echo "" >>   $HOSTNAME-Requirement-2.txt
 
 echo "|=----------------------------=[MOUNTED HARD DRIVES]=------------------------=|" >>   $HOSTNAME-Requirement-2.txt 
@@ -611,7 +612,7 @@ echo "Checking CLAMD conf file exist" >>   $HOSTNAME-Requirement-5.txt
 [ ! `find /etc/clamav -name clamd.conf -print 2>/dev/null` ] && echo "clamav.conf exist" cat /etc/clamav/clamav.conf 2>/dev/null >> $HOSTNAME-Requirement-5.txt || echo "clamav.conf does not exist" >> $HOSTNAME-Requirement-5.txt
 echo "===============================================" >>$HOSTNAME-Requirement-5.txt
 echo "Checking logging is enabled" >>   $HOSTNAME-Requirement-5.txt
-clamconf | grep log 2>/dev/null >> $HOSTNAME-Requirement-5.txt
+clamconf 2>/dev/null | grep log  >> $HOSTNAME-Requirement-5.txt
 
 echo "|=----------------------=[ CONF FILE PERMISSIONS ]=--------------------------=|" >>   $HOSTNAME-Requirement-5.txt 
 echo "|= Related requirements: 5.3                                                 =|" >>   $HOSTNAME-Requirement-5.txt 
@@ -777,12 +778,16 @@ echo "---accounts with password disabled/Not able to logon---" >>   $HOSTNAME-Re
 sudo cat /etc/shadow |grep '!' 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
+echo "|=---------------------------=[PAM AUTH ENABLE]=----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
+echo "Checking PAM is enabled in sshd_config file" >>   $HOSTNAME-Requirement-8.txt
+[[ "`cat /etc/ssh/sshd_config 2>/dev/null | grep UsePAM | grep -v "#" | awk '{print $2}'`" == "yes" ]] && echo "PAM authentication is enabled in sshd_config file" >> $HOSTNAME-Requirement-8.txt || echo "PAM authentication is not enabled in sshd_config file" >> $HOSTNAME-Requirement-8.txt
+
 echo "|=---------------------------=[ACCOUNT LOCKOUT]=----------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.1.6                                                                             =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=--------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt
 echo " This checks /etc/pam.d/system-auth and /etc/pam.d/password-auth to see if a pam_faillock.so line is set " >>   $HOSTNAME-Requirement-8.txt 
-sysauth1=`sudo cat /etc/pam.d/system-auth | grep faillock 2>/dev/null`
-passauth1=`sudo cat /etc/pam.d/password-auth | grep faillock 2>/dev/null`
+sysauth1=`sudo cat /etc/pam.d/system-auth 2>/dev/null | grep faillock`
+passauth1=`sudo cat /etc/pam.d/password-auth 2>/dev/null | grep faillock`
 if [[ ! "$sysauth1" && ! "$passauth1" ]]
 then
 	echo " pam.d/system-auth and pam.d/password-auth dont have any Password lockout attempt settings!"  >>   $HOSTNAME-Requirement-8.txt 
@@ -799,12 +804,30 @@ then
 fi
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
+echo " This checks /etc/pam.d/common-password and /etc/pam.d/common-auth to see if a pam_faillock.so line is set " >>   $HOSTNAME-Requirement-8.txt 
+cmnps1=`sudo cat /etc/pam.d/common-password 2>/dev/null | grep faillock`
+cmnauth1=`sudo cat /etc/pam.d/common-auth 2>/dev/null | grep faillock`
+if [[ ! "$sysauth1" && ! "$passauth1" ]]
+then
+	echo " pam.d/common-auth and pam.d/common-password dont have any Password lockout attempt settings!"  >>   $HOSTNAME-Requirement-8.txt 
+fi
+if [ ! -z "$cmnps1" ]
+then
+	echo "pam.d/common-password has the setting as follows:" >>   $HOSTNAME-Requirement-8.txt 
+	echo $cmnps1 >>   $HOSTNAME-Requirement-8.txt 
+fi
+if [ ! -z "$cmnauth1" ]
+then
+	echo "pam.d/common-auth has the setting as follows:" >>   $HOSTNAME-Requirement-8.txt 
+	echo $cmnauth1 >>   $HOSTNAME-Requirement-8.txt 
+fi
+echo "" >>   $HOSTNAME-Requirement-8.txt
 
 echo "|=----------------------=[ACCOUNT LOCKOUT DURATION]=--------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|= Related requirements: 8.1.7                                                =|" >>   $HOSTNAME-Requirement-8.txt 
 echo "|=----------------------------------------------------------------------------=|" >>   $HOSTNAME-Requirement-8.txt 
 echo "::This Checks Account Lockout duration as set in PAM::"  >>   $HOSTNAME-Requirement-8.txt
-cat /etc/pam.d/system-auth |grep "unlock_time*" 2>/dev/null >>   $HOSTNAME-Requirement-8.txt
+cat /etc/pam.d/system-auth 2>/dev/null |grep "unlock_time*" || cat /etc/common-auth 2>/dev/null | grep "unlock_time*" >>   $HOSTNAME-Requirement-8.txt
 echo "" >>   $HOSTNAME-Requirement-8.txt
 
 
@@ -814,8 +837,8 @@ echo "|=------------------------------------------------------------------------
 
 echo "--[ Console timeout ]" >>   $HOSTNAME-Requirement-8.txt 
 echo "This setting is intended to log a user out of the console if inactive" >>   $HOSTNAME-Requirement-8.txt 
-logout1=`cat ~/.bashrc |grep TMOUT 2>/dev/null`
-logout2=`cat ~/.bash_profile |grep TMOUT 2>/dev/null`
+logout1=`cat ~/.bashrc 2>/dev/null |grep TMOUT `
+logout2=`cat ~/.bash_profile 2>/dev/null |grep TMOUT `
 if [[ ! "$logout1" && ! "$logout2" ]]
 then
 	echo "No Console timeout settings found in bashrc or bash_profile, This does not mean there is no console timeout set as there may be other scripts to do this! " >>  $HOSTNAME-Requirement-8.txt
@@ -824,12 +847,12 @@ fi
 if [ ! -z "$logout1" ]
 then
 	echo ".bashrc :: Time out settings in seconds:$logout1" >>   $HOSTNAME-Requirement-8.txt
-        [ "$logout1" = "900" ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
+        [[ "$logout1" == "900" ]] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
 if [ ! -z "$logout2" ]
 then
 	echo ".bash_profile :: Time out settings in seconds:$logout2" >>   $HOSTNAME-Requirement-8.txt
-        [ "$logout2" = "900" ] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
+        [[ "$logout2" == "900" ]] && echo "Session time out as per standards" >> $HOSTNAME-Requirement-8.txt || echo "Session timeout not per standards" >> $HOSTNAME-Requirement-8.txt
 fi
 
 echo "--[ SSH Timeout ]" >>   $HOSTNAME-Requirement-8.txt
@@ -864,6 +887,28 @@ then
 else
 	echo "No Encryption found /etc/pam.d/system-auth matching pam_unix.so" >>   $HOSTNAME-Requirement-8.txt
 fi
+
+echo "this checks /etc/pam.d/common-auth to see password encryption settings" >>   $HOSTNAME-Requirement-8.txt
+encryp2=`sudo cat /etc/pam.d/common-auth 2>/dev/null |grep pam_unix.so`
+if [[ $encryp2 =~ sha512 ]]
+then 
+	echo `sudo cat /etc/pam.d/common-auth 2>/dev/null |grep sha512` >>   $HOSTNAME-Requirement-8.txt
+elif [[ $encryp2 =~ sha256 ]]
+then
+	echo `sudo cat /etc/pam.d/common-auth 2>/dev/null |grep sha256` >>   $HOSTNAME-Requirement-8.txt
+elif [[ $encryp2 =~ bigcrypt ]]
+then
+	echo `sudo cat /etc/pam.d/common-auth 2>/dev/null |grep bigcrypt` >>   $HOSTNAME-Requirement-8.txt
+elif [[ $encryp2 =~ blowfish ]]
+then
+	echo `sudo cat /etc/pam.d/common-auth 2>/dev/null |grep blowfish` >>   $HOSTNAME-Requirement-8.txt
+elif [[ $encryp2 =~ md5 ]]
+then
+	echo `sudo cat /etc/pam.d/common-auth 2>/dev/null |grep md5` >>   $HOSTNAME-Requirement-8.txt
+else
+	echo "No Encryption found /etc/pam.d/common-auth matching pam_unix.so" >>   $HOSTNAME-Requirement-8.txt
+fi
+
 echo ""  >>   $HOSTNAME-Requirement-8.txt
 echo "This Checks /etc/passwd and /etc/shadow to see what permissions are set on them" >>   $HOSTNAME-Requirement-8.txt
 passwd1=`stat -c %a /etc/passwd 2>/dev/null`
@@ -1671,7 +1716,7 @@ sudo systemctl is-enabled auditd 2>/dev/null >> $HOSTNAME-Requirement-10.txt || 
 echo "" >> $HOSTNAME-Requirement-10.txt
 echo "=================================================" >> $HOSTNAME-Requirement-10.txt
 echo "Audit Configuration" >> $HOSTNAME-Requirement-10.txt
-sudo cat /etc/audit/auditd.conf >> $HOSTNAME-Requirement-10.txt
+sudo cat /etc/audit/auditd.conf 2>/dev/null >> $HOSTNAME-Requirement-10.txt
 
 echo "|=------------------------------=[EVENT WITH AUDIT]=--------------------------=|" >>   $HOSTNAME-Requirement-10.txt 
 echo "|= Related requirements: 10.2 - 10.3                                          =|" >>   $HOSTNAME-Requirement-10.txt 
